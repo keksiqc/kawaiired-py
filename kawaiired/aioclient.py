@@ -2,7 +2,8 @@ from types import TracebackType
 
 import httpx
 
-from kawaiired.utils import BASE_URL, APIException, EndpointType, GifType
+from kawaiired.exceptions import APIException
+from kawaiired.utils import BASE_URL, EndpointType, GifType, Stats
 
 
 class KawaiiAioClient:
@@ -46,6 +47,12 @@ class KawaiiAioClient:
         try:
             response = await self.session.get(url)
             response.raise_for_status()
+            if response.json().get("error"):
+                raise APIException(
+                    401,
+                    "Unauthorized",
+                    response.json().get("error"),
+                )
             return response.json().get("response")
         except httpx.HTTPStatusError as e:
             raise APIException(e.response.status_code, e.response.reason_phrase, e.response.text) from e
@@ -98,3 +105,22 @@ class KawaiiAioClient:
             Optional[str]: The text response, or None if not found.
         """
         raise NotImplementedError("This endpoint is not implemented yet.")
+
+    async def stats(self) -> Stats | None:
+        """
+        Get the stats from the API.
+
+        Returns:
+            Optional[Stats]: The stats from the API, or None if not found.
+        """
+        if self.token == "anonymous":  # noqa: S105
+            raise APIException(403, "Forbidden", "Stats are not available for anonymous users.")
+
+        endpoints = await self._request("stats", "endpoints")
+        if not endpoints:
+            return None
+
+        stats = {"endpoints": endpoints}
+        stats.update({endpoint: await self._request("stats", endpoint) for endpoint in endpoints})
+
+        return Stats(**stats)
