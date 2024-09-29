@@ -1,6 +1,6 @@
 [project]
-name = "kawaiired-py"
-version = "0.1.0"
+name = "kawaiired"
+version = "1.0.0"
 description = "A Python wrapper for the kawaii.red API."
 authors = [
     { name = "Keksi", email = "contact@keksi.me" }
