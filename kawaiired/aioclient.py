@@ -1,3 +1,4 @@
+import random
 from types import TracebackType
 
 import httpx
@@ -105,6 +106,25 @@ class KawaiiAioClient:
             Optional[str]: The text response, or None if not found.
         """
         raise NotImplementedError("This endpoint is not implemented yet.")
+
+    async def endpoints(self, endpoint: EndpointType) -> list[str] | None:
+        """
+        Get the endpoints from the API.
+
+        Returns:
+            Optional[list[str]]: The endpoints from the API, or None if not found.
+        """
+        return await self._request(endpoint, "endpoints")
+
+    async def random(self, endpoint: EndpointType) -> str | None:
+        """
+        Get a random item from the API.
+
+        Returns:
+            Optional[str]: The random item from the API, or None if not found.
+        """
+        categorie = random.choice(await self.endpoints(endpoint))
+        return await self._request(endpoint, categorie)
 
     async def stats(self) -> Stats | None:
         """
