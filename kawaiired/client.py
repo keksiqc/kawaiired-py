@@ -1,3 +1,5 @@
+from types import TracebackType
+
 import httpx
 
 from kawaiired.utils import BASE_URL, APIException, EndpointType, GifType
@@ -18,9 +20,13 @@ class KawaiiClient:
         self.base_url = base_url
         self.session = httpx.Client(headers={"token": self.token})
 
-    def __del__(self):
-        """Ensure the session is closed when the client is deleted."""
-        self.session.close()
+    def __exit__(self, exc_type: type[Exception], exc_val: Exception, exc_tb: TracebackType) -> None:
+        self.close()
+
+    def close(self) -> None:
+        """Close the client session."""
+        if self.session is not None:
+            self.session.close()
 
     def _request(self, endpoint: EndpointType, category: str) -> str | None:
         """
