@@ -52,9 +52,9 @@ stats = client.stats()
 
 ### Asynchronous
 ```python
-from kawaiired import KawaiiClient
+from kawaiired import KawaiiAioClient
 
-client = KawaiiClient(token="your_token_here")
+client = KawaiiAioClient(token="your_token_here")
 
 await client.endpoints("gif")
 # ['hug', 'kiss', 'pat', 'slap', 'tickle', 'waifu', 'wink', 'yiff']
